@@ -38,10 +38,17 @@ class CategoryTest extends TestCase
         );
     }
 
+    /**
+     * Test a new category creation.
+     *
+     * @return void
+     */
     public function testCreate()
     {
         $category = Category::create(['name' => 'test1']);
         $category->refresh();
+
+        $this->assertEquals(36, strlen($category->id));
         $this->assertEquals('test1', $category->name);
         $this->assertNull($category->description);
         $this->assertTrue((bool) $category->is_active);
@@ -59,6 +66,11 @@ class CategoryTest extends TestCase
         $this->assertTrue($category->is_active);
     }
 
+    /**
+     * Test for updating a existing category.
+     *
+     * @return void
+     */
     public function testUpdate()
     {
         /** @var Category $category */
@@ -75,5 +87,17 @@ class CategoryTest extends TestCase
         foreach ($data as $key => $value) {
             $this->assertEquals($value, $category->{$key});
         }
+    }
+/**
+     * Test for deletion of a category.
+     *
+     * @return void
+     */
+    public function testDelete()
+    {
+        /** @var Category $category */
+        $category = Category::factory()->create();
+        $category->delete();
+        $this->assertNull(Category::find($category->id));
     }
 }
