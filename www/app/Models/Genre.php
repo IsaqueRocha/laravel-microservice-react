@@ -14,7 +14,12 @@ class Genre extends Model
     use Uuid;
 
     protected $fillable = ['name', 'description', 'is_active'];
-    protected $dates = ['deleted_at'];
-    protected $keyType = 'string';
+    
+    protected $casts = [
+        'id'            => 'string',
+        'is_active'     => 'boolean',
+        'deleted_at'    => 'datetime'
+    ];
+    
     public $incrementing = false;
 }

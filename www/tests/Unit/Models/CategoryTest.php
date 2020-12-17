@@ -46,14 +46,14 @@ class CategoryTest extends TestCase
         $this->assertEquals($traits, $categoryTraits);
     }
 
-    public function testKeyType()
+    public function testCasts()
     {
-        $keyType = 'string';
-        $this->assertEquals($keyType, $this->category->getKeyType());
-    }
+        $casts = [
+            'id'            => 'string',
+            'is_active'     => 'boolean',
+            'deleted_at'    => 'datetime'
+        ];
 
-    public function testIncrementing()
-    {
-        $this->assertFalse($this->category->getIncrementing());
+        $this->assertEquals($casts, $this->category->getCasts());
     }
 }
