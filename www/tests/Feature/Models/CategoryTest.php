@@ -74,7 +74,9 @@ class CategoryTest extends TestCase
     public function testUpdate()
     {
         /** @var Category $category */
-        $category = Category::factory()->create(['description' => 'test_description'])->first();
+        $category = Category::factory()
+            ->create(['description' => 'test_description'])
+            ->first();
 
         $data = [
             'name'          => 'test_name_updated',
