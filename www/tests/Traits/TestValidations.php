@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Traits;
 
+use Lang;
 use Illuminate\Http\Response;
 use Illuminate\Testing\TestResponse;
-use Lang;
 
 trait TestValidations
 {
