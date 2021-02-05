@@ -59,7 +59,9 @@ class BasicCrudControllerTest extends TestCase
             ->shouldReceive('all')
             ->once()
             ->andReturn(['name' => 'test_name', 'description' => 'test_description']);
+
         $obj = $this->controller->store($request);
+
         $this->assertEquals(CategoryStub::find(1)->toArray(), $obj->toArray());
     }
 
