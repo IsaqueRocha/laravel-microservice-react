@@ -7,6 +7,12 @@ use App\Http\Controllers\Controller;
 
 abstract class BasicCrudController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | ABSTRACT METHODS
+    |--------------------------------------------------------------------------
+    */
+
     /**
      * Return the respective Model of the controller
      *
@@ -20,6 +26,19 @@ abstract class BasicCrudController extends Controller
      * @return array
      */
     abstract protected function rulesStore();
+
+    /**
+     * Return the set of rules to validate a request on store
+     *
+     * @return array
+     */
+    abstract protected function rulesUpdate();
+
+    /*
+    |--------------------------------------------------------------------------
+    | CRUD API METHODS
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * Display a listing of the resource.
@@ -52,7 +71,7 @@ abstract class BasicCrudController extends Controller
      */
     public function show($id)
     {
-        //
+        return $this->findOrFail($id);
     }
 
     /**
@@ -64,7 +83,10 @@ abstract class BasicCrudController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $obj = $this->findOrFail($id);
+        $validatedData = $this->validate($request, $this->rulesUpdate());
+        $obj->update($validatedData);
+        return $obj;
     }
 
     /**
@@ -75,6 +97,26 @@ abstract class BasicCrudController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $obj = $this->findOrFail($id);
+        $obj->delete();
+        return response()->noContent();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPER FUNCTIONS
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Return the specified resource, or throw a exception if fails.
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    protected function findOrFail($id)
+    {
+        $model = $this->model();
+        $keyName = (new $model())->getRouteKeyName();
+        return $this->model()::where($keyName, $id)->firstOrFail();
     }
 }
