@@ -16,7 +16,7 @@ class CastMemberController extends BasicCrudController
 
         $this->rules = [
             'name' => 'required',
-            'type' => 'required:in:' . $options,
+            'type' => 'required|in:' . $options,
         ];
     }
 
