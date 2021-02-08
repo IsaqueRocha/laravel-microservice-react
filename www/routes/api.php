@@ -24,9 +24,16 @@ Route::group(['namespace' => '\App\Http\Controllers\Api'], function () {
         'CategoryController',
         ['except' =>  ['create', 'edit']]
     );
+
     Route::resource(
         'genres',
         'GenreController',
+        ['except' =>  ['create', 'edit']]
+    );
+
+    Route::resource(
+        'cast_members',
+        'CastMemberController',
         ['except' =>  ['create', 'edit']]
     );
 });
