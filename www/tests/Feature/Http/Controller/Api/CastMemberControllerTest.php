@@ -2,20 +2,25 @@
 
 namespace Tests\Feature\Http\Controller\Api;
 
-use App\Models\CastMember;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Http\Response;
 use Tests\TestCase;
+use App\Models\CastMember;
 use Tests\Traits\TestSaves;
+use Illuminate\Http\Response;
 use Tests\Traits\TestValidations;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class CastMemberControllerTest extends TestCase
 {
     use DatabaseMigrations;
     use TestValidations;
     use TestSaves;
+
+    /**
+     * @var CastMember  $castMember
+     */
+    private $castMember;
 
     /*
     |--------------------------------------------------------------------------
@@ -72,7 +77,6 @@ class CastMemberControllerTest extends TestCase
         $this->assertInvalidationInStoreAction($data, 'in');
         $this->assertInvalidationInUpdateAction($data, 'in');
     }
-
 
     public function testStore()
     {

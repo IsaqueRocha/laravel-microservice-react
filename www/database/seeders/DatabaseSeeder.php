@@ -17,5 +17,6 @@ class DatabaseSeeder extends Seeder
         $this->call(CategorySeeder::class);
         $this->call(GenreSeeder::class);
         $this->call(CastMemberSeeder::class);
+        $this->call(VideoSeeder::class);
     }
 }
