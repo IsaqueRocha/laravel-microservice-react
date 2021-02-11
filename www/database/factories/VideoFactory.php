@@ -27,6 +27,7 @@ class VideoFactory extends Factory
             'title'         => $this->faker->sentence(3),
             'description'   => $this->faker->sentence(10),
             'year_launched' => rand(1895, 2022),
+            'opened'        => rand(0, 1),
             'rating'        => $rating,
             'duration'      => rand(1, 30),
             // 'thumb_file'    => null,
