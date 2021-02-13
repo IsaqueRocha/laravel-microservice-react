@@ -20,7 +20,30 @@ class VideoController extends BasicCrudController
             'opened'        => 'boolean',
             'rating'        => 'required|in:' . implode(',', Video::RATING_LIST),
             'duration'      => 'required|integer',
+            'categories_id' => 'required|array|exists:categories,id',
+            'genres_id'     => 'required|array|exists:genres,id',
         ];
+    }
+
+    public function store(Request $request)
+    {
+        $validatedData = $this->validate($request, $this->rulesStore());
+        /** @var Video $obj */
+        $obj = $this->model()::create($validatedData);
+        $obj->categories()->sync($request->get('categories_id'));
+        $obj->genres()->sync($request->get('genres_id'));
+        return $obj->refresh();
+    }
+
+    public function update(Request $request, $id)
+    {
+        /** @var Video $obj */
+        $obj = $this->findOrFail($id);
+        $validatedData = $this->validate($request, $this->rulesUpdate());
+        $obj->update($validatedData);
+        $obj->categories()->sync($request->get('categories_id'));
+        $obj->genres()->sync($request->get('genres_id'));
+        return $obj;
     }
 
     protected function model()
