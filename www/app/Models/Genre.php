@@ -14,12 +14,17 @@ class Genre extends Model
     use Uuid;
 
     protected $fillable = ['name', 'description', 'is_active'];
-    
+
     protected $casts = [
         'id'            => 'string',
         'is_active'     => 'boolean',
         'deleted_at'    => 'datetime'
     ];
-    
+
     public $incrementing = false;
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
 }
