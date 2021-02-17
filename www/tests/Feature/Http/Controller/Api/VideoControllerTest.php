@@ -172,7 +172,7 @@ class VideoControllerTest extends TestCase
 
         $this->assertDatabaseMissing('category_video', [
             'category_id' => [$categoriesID[0]],
-            'video_id'      => $response->json('id'),
+            'video_id'    => $response->json('id'),
         ]);
 
         $this->assertDatabaseHas('category_video', [
@@ -182,7 +182,7 @@ class VideoControllerTest extends TestCase
 
         $this->assertDatabaseHas('category_video', [
             'category_id' => [$categoriesID[2]],
-            'video_id'      => $response->json('id'),
+            'video_id'    => $response->json('id'),
         ]);
     }
 
@@ -305,16 +305,15 @@ class VideoControllerTest extends TestCase
     public function testRollbackStore()
     {
         $controller = Mockery::mock(VideoController::class)->makePartial()->shouldAllowMockingProtectedMethods();
-
         $controller->shouldReceive('validate')->andReturn($this->sendData);
-
         $controller->shouldReceive('rulesStore')->andReturn([]);
-
         $controller->shouldReceive('handleRelations')->once()->andThrow(new TestException());
 
         $request = Mockery::mock(Request::class);
+        $request->shouldReceive('get')->andReturn(null);
 
         $hasError = false;
+
         try {
             $controller->store($request);
         } catch (TestException $e) {
@@ -333,8 +332,10 @@ class VideoControllerTest extends TestCase
         $controller->shouldReceive('handleRelations')->once()->andThrow(new TestException());
 
         $request = Mockery::mock(Request::class);
+        $request->shouldReceive('get')->andReturn(null);
 
         $hasError = false;
+
         try {
             $controller->store($request);
         } catch (TestException $e) {
