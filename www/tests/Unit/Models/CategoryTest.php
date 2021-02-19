@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Models;
 
+use Tests\TestCase;
 use App\Models\Category;
 use App\Models\Traits\Uuid;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CategoryTest extends TestCase
 {
