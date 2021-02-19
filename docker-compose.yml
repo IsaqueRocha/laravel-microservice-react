@@ -6,7 +6,7 @@ services:
       context: ./.docker/app
     container_name: micro-videos-app
     image: isaquero/micro-videos-app:dev
-    entrypoint: dockerize -template /templates/.env:.env -template /templates/.env.testing:.env.testing -wait tcp://db:3306 -timeout 30s /entrypoint.sh
+    entrypoint: dockerize -template /templates/.env:.env -wait tcp://db:3306 -timeout 30s /entrypoint.sh
     volumes:
       - ./www:/var/www:delegated
     environment:

@@ -17,7 +17,7 @@ RUN rm -rf /var/www/html
 RUN ln -s public html
 
 ADD .env /templates/.env
-ADD .env.testing /templates/.env.testing
+# ADD .env.testing /templates/.env.testing
 ADD entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
