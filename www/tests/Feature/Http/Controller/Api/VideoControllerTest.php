@@ -10,16 +10,20 @@ use App\Models\Category;
 use Tests\Traits\TestSaves;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Tests\Traits\TestUploads;
 use Tests\Traits\TestValidations;
 use Tests\Exceptions\TestException;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\VideoController;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Http\UploadedFile;
 
 class VideoControllerTest extends TestCase
 {
     use DatabaseMigrations;
     use TestValidations;
     use TestSaves;
+    use TestUploads;
 
     /** @var Video $video */
     private $video;
@@ -91,7 +95,7 @@ class VideoControllerTest extends TestCase
             ->assertJson($this->video->toArray());
     }
 
-    public function testSave()
+    public function testSaveWithoutFiles()
     {
         /** @var Category $category */
         $category = Category::factory()->create();
@@ -138,6 +142,67 @@ class VideoControllerTest extends TestCase
 
             $this->assertHasCategory($response->json('id'), $value['send_data']['categories_id'][0]);
             $this->assertHasgenre($response->json('id'), $value['send_data']['genres_id'][0]);
+        }
+    }
+
+    public function testStoreWithFiles()
+    {
+        Storage::fake();
+        $files = $this->getFiles();
+
+        /** @var Category $category */
+        $category = Category::factory()->create();
+        /** @var Genre $genre */
+        $genre = Genre::factory()->create();
+
+        $genre->categories()->sync($category->id);
+
+        $response = $this->json(
+            'POST',
+            $this->routeStore(),
+            $this->sendData + [
+                'categories_id' => [$category->id],
+                'genres_id'     => [$genre->id]
+            ] + $files
+        );
+
+        $response->assertStatus(Response::HTTP_CREATED);
+
+        $id = $response->json('id');
+
+        foreach ($files as $file) {
+            Storage::assertExists("$id/{$file->hashName()}");
+        }
+    }
+
+    // upload not implemented yet
+    public function nottestUpdateWithFiles()
+    {
+        Storage::fake();
+        $files = $this->getFiles();
+
+        /** @var Category $category */
+        $category = Category::factory()->create();
+        /** @var Genre $genre */
+        $genre = Genre::factory()->create();
+
+        $genre->categories()->sync($category->id);
+
+        $response = $this->json(
+            'PUT',
+            $this->routeUpdate(),
+            $this->sendData + [
+                'categories_id' => [$category->id],
+                'genres_id'     => [$genre->id]
+            ] + $files
+        );
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $id = $response->json('id');
+
+        foreach ($files as $file) {
+            Storage::assertExists("$id/{$file->hashName()}");
         }
     }
 
@@ -302,6 +367,17 @@ class VideoControllerTest extends TestCase
         $this->assertInvalidationInUpdateAction($data, 'exists');
     }
 
+    public function testInvalidVideoField()
+    {
+        $this->assertInvalidFile(
+            'video_file',
+            'mp4',
+            100,
+            'mimetypes',
+            ['values' => 'video/mp4']
+        );
+    }
+
     // public function testRollbackStore()
     // {
     //     $controller = Mockery::mock(VideoController::class)->makePartial()->shouldAllowMockingProtectedMethods();
@@ -380,5 +456,12 @@ class VideoControllerTest extends TestCase
             'genre_id' => $genreID,
             'video_id' => $videoID
         ]);
+    }
+
+    protected function getFiles()
+    {
+        return [
+            'video_file' => UploadedFile::fake()->create('video_file.mp4')
+        ];
     }
 }

@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Traits\Uuid;
 use DB;
+use App\Models\Traits\Uuid;
+use App\Models\Traits\UploadFiles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,6 +14,7 @@ class Video extends Model
     use HasFactory;
     use SoftDeletes;
     use Uuid;
+    use UploadFiles;
 
     public const RATING_LIST = ['L', '10', '12', '14', '16', '18'];
 
@@ -24,6 +26,8 @@ class Video extends Model
         'rating',
         'duration',
     ];
+
+    public static $fileFields = ['video_file'];
 
     protected $dates = ['deleted_at'];
 
@@ -38,11 +42,13 @@ class Video extends Model
 
     public static function create(array $attributes = [])
     {
+        $files = self::extractFiles($attributes);
         try {
             DB::beginTransaction();
+            /** @var Video $obj */
             $obj = static::query()->create($attributes);
             static::handleRelations($obj, $attributes);
-            //uploads
+            $obj->uploadFiles($files);
             DB::commit();
             return $obj;
         } catch (\Exception $e) {
@@ -91,5 +97,10 @@ class Video extends Model
     public function genres()
     {
         return $this->belongsToMany(Genre::class)->withTrashed();
+    }
+
+    public function uploadDir()
+    {
+        return $this->id;
     }
 }
