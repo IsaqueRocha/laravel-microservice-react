@@ -1,7 +1,9 @@
 FROM php:7.4-fpm-alpine
 
-RUN apk add --no-cache openssl bash mysql-client nodejs npm git
+RUN apk add --no-cache openssl bash mysql-client nodejs npm git freetype-dev libjpeg-turbo-dev libpng-dev
 RUN docker-php-ext-install pdo pdo_mysql bcmath
+RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
+RUN docker-php-ext-install -j$(nproc) gd
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
