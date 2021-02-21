@@ -58,7 +58,7 @@ class VideoControllerUploadTest extends BaseVideoControllerTestCase
     }
 
     // upload not implemented yet
-    public function nottestUpdateWithFiles()
+    public function testUpdateWithFiles()
     {
         Storage::fake();
         $files = $this->getFiles();
@@ -96,7 +96,6 @@ class VideoControllerUploadTest extends BaseVideoControllerTestCase
         $this->assertNull(Video::find($this->video->id));
         $this->assertNotNull(Video::withTrashed()->find($this->video->id));
     }
-
 
     /*
     |--------------------------------------------------------------------------
