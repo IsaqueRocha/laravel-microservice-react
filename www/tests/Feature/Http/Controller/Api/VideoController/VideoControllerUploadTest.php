@@ -57,7 +57,6 @@ class VideoControllerUploadTest extends BaseVideoControllerTestCase
         }
     }
 
-    // upload not implemented yet
     public function testUpdateWithFiles()
     {
         Storage::fake();

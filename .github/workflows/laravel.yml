@@ -36,3 +36,16 @@ jobs:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
         run: vendor/bin/phpunit
+      - name: Recreate Database
+        run: |
+          rm database/database.sqlite
+          touch database/database.sqlite
+      - name: Decrypt service account file
+        env: 
+          GPG_SECRET_PASSPHRASE: ${{secrets.GPG_SECRET_PASSPHRASE}}
+        run: ../.github/scripts/decrypt_secret.sh
+      - name: Execute tests (Production) via PHPUnit
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: vendor/bin/phpunit
