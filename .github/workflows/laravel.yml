@@ -43,10 +43,9 @@ jobs:
       - name: Decrypt service account file
         env: 
           GPG_SECRET_PASSPHRASE: ${{secrets.GPG_SECRET_PASSPHRASE}}
-        run: gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" \
-              --output ./storage/credentials/google/laravel-fc-microservice.json ./storage/credentials/google/laravel-fc-microservice.json.gpg
+        run: gpg --quiet --batch --yes --decrypt --passphrase=${{secrets.GPG_SECRET_PASSPHRASE}} --output ./storage/credentials/google/laravel-fc-microservice.json ./storage/credentials/google/laravel-fc-microservice.json.gpg
       - name: Execute tests (Production) via PHPUnit
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
-        run: vendor/bin/phpunit
+        run: vendor/bin/phpunit --config phpunit.prod.xml
