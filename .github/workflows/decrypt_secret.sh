@@ -1,6 +1,7 @@
 #!/bin/sh
-
+# Decrypt the file
+mkdir $HOME/secrets
 # --batch to prevent interactive command
 # --yes to assume "yes" for questions
-gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" \
+gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" \
 --output ./storage/credentials/google/laravel-fc-microservice.json laravel-fc-microservice.json.gpg

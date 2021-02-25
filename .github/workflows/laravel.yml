@@ -44,7 +44,7 @@ jobs:
         env: 
           GPG_SECRET_PASSPHRASE: ${{secrets.GPG_SECRET_PASSPHRASE}}
         run: gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" \
-              --output ./storage/credentials/google/laravel-fc-microservice.json laravel-fc-microservice.json.gpg
+              --output ./storage/credentials/google/laravel-fc-microservice.json ./storage/credentials/google/laravel-fc-microservice.json.gpg
       - name: Execute tests (Production) via PHPUnit
         env:
           DB_CONNECTION: sqlite
