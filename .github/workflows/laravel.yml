@@ -41,9 +41,10 @@ jobs:
           rm database/database.sqlite
           touch database/database.sqlite
       - name: Decrypt service account file
-        env: 
-          GPG_SECRET_PASSPHRASE: ${{secrets.GPG_SECRET_PASSPHRASE}}
-        run: gpg --quiet --batch --yes --decrypt --passphrase=${{secrets.GPG_SECRET_PASSPHRASE}} --output ./storage/credentials/google/laravel-fc-microservice.json ./storage/credentials/google/laravel-fc-microservice.json.gpg
+        run: gpg --quiet --batch --yes --decrypt \
+              --passphrase=${{secrets.GPG_SECRET_PASSPHRASE}} \
+              --output ./storage/credentials/google/laravel-fc-microservice.json \
+              ./storage/credentials/google/laravel-fc-microservice.json.gpg
       - name: Execute tests (Production) via PHPUnit
         env:
           DB_CONNECTION: sqlite

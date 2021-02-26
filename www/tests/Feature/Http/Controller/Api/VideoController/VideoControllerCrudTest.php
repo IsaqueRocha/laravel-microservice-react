@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Controller\Api\VideoController;
 use App\Models\Genre;
 use App\Models\Video;
 use App\Models\Category;
+use Arr;
 use Tests\Traits\TestSaves;
 use Illuminate\Http\Response;
 use Tests\Traits\TestValidations;
@@ -48,36 +49,20 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
 
     public function testSaveWithoutFiles()
     {
-        /** @var Category $category */
-        $category = Category::factory()->create();
-        /** @var Genre $genre */
-        $genre = Genre::factory()->create();
-
-        $genre->categories()->sync($category->id);
+        $testData = Arr::except($this->sendData, ['categories_id', 'genres_id']);
 
         $data = [
             [
-                'send_data' => $this->sendData + [
-                    'categories_id' => [$category->id],
-                    'genres_id'     => [$genre->id]
-                ],
-                'test_data' => $this->sendData + ['opened' => false]
+                'send_data' => $this->sendData,
+                'test_data' => $testData + ['opened' => false]
             ],
             [
-                'send_data' => $this->sendData + [
-                    'opened'        => true,
-                    'categories_id' => [$category->id],
-                    'genres_id'     => [$genre->id]
-                ],
-                'test_data' => $this->sendData + ['opened' => true]
+                'send_data' => $this->sendData + ['opened' => true],
+                'test_data' => $testData + ['opened' => true]
             ],
             [
-                'send_data' => $this->sendData + [
-                    'rating'        => Video::RATING_LIST[1],
-                    'categories_id' => [$category->id],
-                    'genres_id'     => [$genre->id]
-                ],
-                'test_data' => $this->sendData + ['rating' => Video::RATING_LIST[1]]
+                'send_data' => $this->sendData + ['rating' => Video::RATING_LIST[1],],
+                'test_data' => $testData + ['rating' => Video::RATING_LIST[1]]
             ],
         ];
 

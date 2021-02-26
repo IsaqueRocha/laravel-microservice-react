@@ -49,4 +49,12 @@ class UploadFilesTest extends TestCase
 
         $this->assertEqualsCanonicalizing([], $this->obj->oldFiles);
     }
+
+    public function testRelativeFilePath()
+    {
+        $this->assertEquals(
+            "1/video.mp4",
+            $this->obj->relativeFilePath('video.mp4')
+        );
+    }
 }
