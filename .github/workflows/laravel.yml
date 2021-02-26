@@ -32,10 +32,7 @@ jobs:
           mkdir -p database
           touch database/database.sqlite
       - name: Decrypt service account file
-        run: gpg --quiet --batch --yes --decrypt \
-              --passphrase=${{secrets.GPG_SECRET_PASSPHRASE}} \
-              --output ./storage/credentials/google/laravel-fc-microservice.json \
-              ./storage/credentials/google/laravel-fc-microservice.json.gpg
+        run: gpg --quiet --batch --yes --decrypt --passphrase=${{secrets.GPG_SECRET_PASSPHRASE}} --output ./storage/credentials/google/laravel-fc-microservice.json ./storage/credentials/google/laravel-fc-microservice.json.gpg
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         env:
           DB_CONNECTION: sqlite
