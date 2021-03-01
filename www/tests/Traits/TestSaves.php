@@ -20,7 +20,7 @@ trait TestSaves
         /** @var TestResponse $response */
         $response = $this->json('POST', $this->routeStore(), $sendData);
         if ($response->status() !== Response::HTTP_CREATED) {
-            throw new Exception(
+            throw new Exception( //NOSONAR
                 "Response status must be {$K(Response::HTTP_CREATED)}, given {$response->status()}:\n
                 {$response->content()}"
             );
@@ -38,7 +38,7 @@ trait TestSaves
         /** @var TestResponse $response */
         $response = $this->json('PUT', $this->routeUpdate(), $sendData);
         if ($response->status() !== Response::HTTP_OK) {
-            throw new Exception(
+            throw new Exception( //NOSONAR
                 "Response status must be {$K(Response::HTTP_OK)}, given {$response->status()}:\n
                 {$response->content()}"
             );
@@ -54,12 +54,17 @@ trait TestSaves
     {
         $model = $this->model();
         $table = (new $model())->getTable();
-        $this->assertDatabaseHas($table, $testDatabase + ['id' => $response->json('id')]);
+        $this->assertDatabaseHas($table, $testDatabase + ['id' => $this->getIDFromResponse($response)]);
     }
 
     private function assertJsonResponseContent($response, $testDatabase, $testJsonData): void
     {
         $testResponse = $testJsonData ?? $testDatabase;
-        $response->assertJsonFragment($testResponse + ['id' => $response->json('id')]);
+        $response->assertJsonFragment($testResponse + ['id' => $this->getIDFromResponse($response)]);
+    }
+
+    private function getIDFromResponse(TestResponse $response)
+    {
+        return $response->json('id') ?? $response->json('data.id');
     }
 }

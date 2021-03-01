@@ -34,6 +34,13 @@ abstract class BasicCrudController extends Controller
      */
     abstract protected function rulesUpdate();
 
+    /**
+     * Return the model resource
+     *
+     * @return Illuminate\Http\Resources\Json\JsonResource
+     */
+    abstract protected function resource();
+
     /*
     |--------------------------------------------------------------------------
     | CRUD API METHODS
@@ -60,7 +67,9 @@ abstract class BasicCrudController extends Controller
     {
         $validatedData = $this->validate($request, $this->rulesStore());
         $obj = $this->model()::create($validatedData);
-        return $obj->refresh();
+        $obj->refresh();
+        $resource = $this->resource();
+        return new $resource($obj);
     }
 
     /**
@@ -71,7 +80,10 @@ abstract class BasicCrudController extends Controller
      */
     public function show($id)
     {
-        return $this->findOrFail($id);
+        $obj = $this->findOrFail($id);
+        $obj->refresh();
+        $resource = $this->resource();
+        return new $resource($obj);
     }
 
     /**
@@ -86,7 +98,9 @@ abstract class BasicCrudController extends Controller
         $obj = $this->findOrFail($id);
         $validatedData = $this->validate($request, $this->rulesUpdate());
         $obj->update($validatedData);
-        return $obj;
+        $obj->refresh();
+        $resource = $this->resource();
+        return new $resource($obj);
     }
 
     /**

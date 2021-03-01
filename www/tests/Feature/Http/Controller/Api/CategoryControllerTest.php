@@ -6,7 +6,9 @@ use Tests\TestCase;
 use App\Models\Category;
 use Tests\Traits\TestSaves;
 use Illuminate\Http\Response;
+use Tests\Traits\TestResources;
 use Tests\Traits\TestValidations;
+use App\Http\Resources\CategoryResource;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class CategoryControllerTest extends TestCase
@@ -14,11 +16,19 @@ class CategoryControllerTest extends TestCase
     use DatabaseMigrations;
     use TestValidations;
     use TestSaves;
+    use TestResources;
 
-    /**
-     * @var Category  $category
-     */
+    /** @var Category  $category */
     private $category;
+
+    private $serializedFields = [
+        'name',
+        'description',
+        'is_active',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 
     /*
     |--------------------------------------------------------------------------
@@ -49,7 +59,7 @@ class CategoryControllerTest extends TestCase
     | TEST FUNCTIONS
     |--------------------------------------------------------------------------
     */
-
+    // ! POSITIVE TESTS
     /**
      * Test to show all categories
      *
@@ -71,32 +81,9 @@ class CategoryControllerTest extends TestCase
      */
     public function testShow()
     {
-        $response = $this->json(
-            'get',
-            route(
-                self::SHOW,
-                ['category' => $this->category->id]
-            )
-        );
-
-        $response
-            ->assertStatus(Response::HTTP_OK)
-            ->assertJson($this->category->toArray());
-    }
-
-    public function testInvalidaData()
-    {
-        $data = ['name' => ''];
-        $this->assertInvalidationInStoreAction($data, 'required');
-        $this->assertInvalidationInUpdateAction($data, 'required');
-
-        $data = ['name' => str_repeat('a', 256)];
-        $this->assertInvalidationInStoreAction($data, 'max.string', ['max' => 255]);
-        $this->assertInvalidationInUpdateAction($data, 'max.string', ['max' => 255]);
-
-        $data = ['is_active' => 'a'];
-        $this->assertInvalidationInStoreAction($data, 'boolean');
-        $this->assertInvalidationInUpdateAction($data, 'boolean');
+        $response = $this->json('GET', route(self::SHOW, ['category' => $this->category->id]));
+        $response->assertStatus(Response::HTTP_OK);
+        $this->assertJsonResouce($response, $this->resource(), $this->model());
     }
 
     public function testStore()
@@ -106,7 +93,7 @@ class CategoryControllerTest extends TestCase
             $data,
             $data + ['description' => null, 'is_active' => true, 'deleted_at' => null]
         );
-        $response->assertJsonStructure(['created_at', 'updated_at']);
+        $response->assertJsonStructure(['data' => $this->serializedFields]);
 
         $data = [
             'name' => 'test1',
@@ -114,6 +101,7 @@ class CategoryControllerTest extends TestCase
             'is_active' => false
         ];
         $this->assertStore($data, $data);
+        $this->assertJsonResouce($response, $this->resource(), $this->model());
     }
 
     public function testUpdate()
@@ -129,7 +117,8 @@ class CategoryControllerTest extends TestCase
             'is_active' => true
         ];
         $response = $this->assertUpdate($data, $data + ['deleted_at' => null]);
-        $response->assertJsonStructure(['created_at', 'updated_at']);
+        $response->assertJsonStructure(['data' => $this->serializedFields]);
+        $this->assertJsonResouce($response, $this->resource(), $this->model());
 
         $data = [
             'name' => 'test',
@@ -157,6 +146,23 @@ class CategoryControllerTest extends TestCase
         $this->assertNotNull(Category::withTrashed()->find($this->category->id));
     }
 
+    // !NEGATIVE TESTS
+
+    public function testInvalidaData()
+    {
+        $data = ['name' => ''];
+        $this->assertInvalidationInStoreAction($data, 'required');
+        $this->assertInvalidationInUpdateAction($data, 'required');
+
+        $data = ['name' => str_repeat('a', 256)];
+        $this->assertInvalidationInStoreAction($data, 'max.string', ['max' => 255]);
+        $this->assertInvalidationInUpdateAction($data, 'max.string', ['max' => 255]);
+
+        $data = ['is_active' => 'a'];
+        $this->assertInvalidationInStoreAction($data, 'boolean');
+        $this->assertInvalidationInUpdateAction($data, 'boolean');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | CUSTOM SUPPORT FUNCTIONS
@@ -176,5 +182,10 @@ class CategoryControllerTest extends TestCase
     protected function model()
     {
         return Category::class;
+    }
+
+    protected function resource()
+    {
+        return CategoryResource::class;
     }
 }
