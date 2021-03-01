@@ -9,15 +9,22 @@ trait TestResources
 {
     abstract protected function resource();
 
-    protected function assertResource(TestResponse $response, JsonResource $resorce)
+    protected function assertResource(TestResponse $response, JsonResource $resource)
     {
-        $response->assertJson($resorce->response()->getData(true));
+        $response->assertJson($resource->response()->getData(true));
     }
 
-    protected function assertJsonResouce(TestResponse $response, $resourceClass, $model)
+    protected function assertJsonResource(TestResponse $response, $resourceClass, $model)
     {
         $id = $response->json('data.id');
         $resource = new $resourceClass($model::find($id));
+        $this->assertResource($response, $resource);
+    }
+
+    protected function assertJsonCollection(TestResponse $response, $resourceClass, $model)
+    {
+        $id = $response->json('data.id');
+        $resource = $resourceClass::collection(collect($model::find($id)));
         $this->assertResource($response, $resource);
     }
 }

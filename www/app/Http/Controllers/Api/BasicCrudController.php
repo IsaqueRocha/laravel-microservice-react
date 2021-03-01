@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
+use ReflectionClass;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 abstract class BasicCrudController extends Controller
 {
+    protected $paginationSize = 15;
+
     /*
     |--------------------------------------------------------------------------
     | ABSTRACT METHODS
@@ -41,6 +45,13 @@ abstract class BasicCrudController extends Controller
      */
     abstract protected function resource();
 
+    /**
+     * Return the model resource collection
+     *
+     * @return Illuminate\Http\Resources\Json\ResourceCollection
+     */
+    abstract protected function resourceCollection();
+
     /*
     |--------------------------------------------------------------------------
     | CRUD API METHODS
@@ -54,7 +65,15 @@ abstract class BasicCrudController extends Controller
      */
     public function index()
     {
-        return $this->model()::all();
+        $data = !$this->paginationSize ? $this->model()::all() : $this->model()::paginate($this->paginationSize);
+
+        $resouceCollectionClass = $this->resourceCollection();
+
+        $refClass = new ReflectionClass($this->resourceCollection());
+
+        return $refClass->isSubclassOf(ResourceCollection::class) ?
+            new $resouceCollectionClass($data) :
+            $resouceCollectionClass::collection($data);
     }
 
     /**

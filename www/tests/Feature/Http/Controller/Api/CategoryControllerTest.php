@@ -67,11 +67,20 @@ class CategoryControllerTest extends TestCase
      */
     public function testIndex()
     {
-        $response = $this->json('get', route(self::INDEX));
+        $response = $this->json('GET', route(self::INDEX));
 
         $response
-            ->assertStatus(200)
-            ->assertJson([$this->category->toArray()]);
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJson(['meta' => ['per_page' => 15]])
+            ->assertJsonStructure(
+                [
+                    'data'  => ['*' => $this->serializedFields],
+                    'links' => [],
+                    'meta'  => []
+                ]
+            );
+
+        $this->assertJsonCollection($response, $this->resource(), $this->model());
     }
 
     /**
@@ -83,7 +92,7 @@ class CategoryControllerTest extends TestCase
     {
         $response = $this->json('GET', route(self::SHOW, ['category' => $this->category->id]));
         $response->assertStatus(Response::HTTP_OK);
-        $this->assertJsonResouce($response, $this->resource(), $this->model());
+        $this->assertJsonResource($response, $this->resource(), $this->model());
     }
 
     public function testStore()
@@ -101,7 +110,7 @@ class CategoryControllerTest extends TestCase
             'is_active' => false
         ];
         $this->assertStore($data, $data);
-        $this->assertJsonResouce($response, $this->resource(), $this->model());
+        $this->assertJsonResource($response, $this->resource(), $this->model());
     }
 
     public function testUpdate()
@@ -118,7 +127,7 @@ class CategoryControllerTest extends TestCase
         ];
         $response = $this->assertUpdate($data, $data + ['deleted_at' => null]);
         $response->assertJsonStructure(['data' => $this->serializedFields]);
-        $this->assertJsonResouce($response, $this->resource(), $this->model());
+        $this->assertJsonResource($response, $this->resource(), $this->model());
 
         $data = [
             'name' => 'test',

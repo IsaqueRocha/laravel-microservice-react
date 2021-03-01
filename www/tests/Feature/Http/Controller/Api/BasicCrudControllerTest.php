@@ -37,11 +37,18 @@ class BasicCrudControllerTest extends TestCase
             'name' => 'test_name',
             'description' => 'test_description'
         ]);
+
+        $result =  $this->controller->index();
+        $serialized = $result->response()->getData(true);
+
         $this->controller = new CategoryControllerStub();
         $this->assertEquals(
             [$category->toArray()],
-            $this->controller->index()->toArray()
+            $serialized['data']
         );
+
+        $this->assertArrayHasKey('meta', $serialized);
+        $this->assertArrayHasKey('links', $serialized);
     }
 
     public function testInvalidationInStore()
@@ -60,9 +67,9 @@ class BasicCrudControllerTest extends TestCase
             ->once()
             ->andReturn(['name' => 'test_name', 'description' => 'test_description']);
 
-        $obj = $this->controller->store($request);
-
-        $this->assertEquals(CategoryStub::find(1)->toArray(), $obj->toArray());
+        $result =  $this->controller->store($request);
+        $serialized = $result->response()->getData(true);
+        $this->assertEquals(CategoryStub::first()->toArray(), $serialized['data']);
     }
 
     public function testIfFindOrFailFetchModel()
@@ -104,8 +111,9 @@ class BasicCrudControllerTest extends TestCase
 
         /** @var CategoryStub $result */
         $result = $this->controller->show($category->id);
+        $serialized = $result->response()->getData(true);
 
-        $this->assertEquals($result->toArray(), $category->toArray());
+        $this->assertEquals($category->toArray(), $serialized['data']);
     }
 
     public function testUpdate()
@@ -127,8 +135,9 @@ class BasicCrudControllerTest extends TestCase
 
         /** @var CategoryStub $result */
         $result = $this->controller->update($request, $category->id);
+        $serialized = $result->response()->getData(true);
 
-        $this->assertEquals($result->toArray(), CategoryStub::find(1)->toArray());
+        $this->assertEquals(CategoryStub::first()->toArray(), $serialized['data']);
     }
 
     public function testDestroy()
