@@ -24,6 +24,8 @@ ADD entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
+RUN usermod -u 1000 www-data
+
 EXPOSE 9000
 
 # ENTRYPOINT [ "php-fpm"]
