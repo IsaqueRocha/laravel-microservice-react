@@ -9,6 +9,8 @@ services:
     entrypoint: dockerize -wait tcp://db:3306 -timeout 30s /entrypoint.sh
     ports:
       - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     volumes:
       - .:/var/www:delegated
     networks:
