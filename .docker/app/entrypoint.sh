@@ -4,9 +4,10 @@
 
 ### FRONT-END
 npm config set cache /var/www/.npm-cache --global
-cd frontend && npm install & cd ..
+cd frontend && npm install && cd ..
 
 ### BACK-END
+pwd
 cd backend
 chown -R www-data:www-data .
 
