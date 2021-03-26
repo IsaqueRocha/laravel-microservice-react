@@ -1,6 +1,11 @@
-import { IconButton, MenuItem, Menu as MuiMenu } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
 import React, { useState } from 'react';
+import { IconButton, Menu as MuiMenu, MenuItem } from '@material-ui/core';
+import { Link } from 'react-router-dom';
+import MenuIcon from '@material-ui/icons/Menu';
+import routes, { MyRouteProps } from '../../routes';
+
+const listRoutes = ['dashboard', 'categories.list'];
+const menuRoutes = routes.filter((route) => listRoutes.includes(route.name));
 
 const Menu = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -31,7 +36,22 @@ const Menu = () => {
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
         getContentAnchorEl={null}
       >
-        <MenuItem>Categorias</MenuItem>
+        {listRoutes.map((routeName, key) => {
+          const route = menuRoutes.find(
+            (route) => route.name === routeName
+          ) as MyRouteProps;
+
+          return (
+            <MenuItem
+              key={key}
+              component={Link}
+              to={route.path as string}
+              onClick={handleClose}
+            >
+              {route.label}
+            </MenuItem>
+          );
+        })}
       </MuiMenu>
     </React.Fragment>
   );
